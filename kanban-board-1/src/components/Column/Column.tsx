@@ -7,30 +7,37 @@ type Props = {
 };
 
 export function Column({ column }: Props) {
-    const { cards, addCard } = useKanban();
+    const { cards, addCard, moveCard } = useKanban();
 
     const columnCards = cards.filter(
     card => card.columnId === column.id
     );
 
-    function handleAddCard() {
-    const title = prompt("Título do card");
-    if (!title) return;
-    addCard(title, column.id);
-    }
+    function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    const cardId = e.dataTransfer.getData("cardId");
+    moveCard(cardId, column.id);
+}
 
     return (
-    <div className="bg-zinc-900 p-4 rounded w-64">
-        <h2 className="text-lg mb-4">{column.title}</h2>
+    <div
+        onDragOver={e => e.preventDefault()}
+        onDrop={handleDrop}
+        className="bg-zinc-900 p-4 rounded w-64"
+    >
+    <h2 className="text-lg mb-4">{column.title}</h2>
 
-        <div className="mb-4">
+    <div className="mb-4 min-h-[40px]">
         {columnCards.map(card => (
-            <Card key={card.id} card={card} />
+        <Card key={card.id} card={card} />
         ))}
-        </div>
+    </div>
 
-        <button
-        onClick={handleAddCard}
+    <button
+        onClick={() => {
+            const title = prompt("Título do card");
+            if (title) addCard(title, column.id);
+        }}
         className="text-sm text-zinc-400 hover:text-white"
         >
         + Adicionar card

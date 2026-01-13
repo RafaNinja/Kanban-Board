@@ -8,6 +8,10 @@ type Props = {
 export function Card({ card }: Props) {
   const { updateCard, removeCard } = useKanban();
 
+  function handleDragStart(e: React.DragEvent) {
+    e.dataTransfer.setData("cardId", card.id);
+  }
+
   function handleEdit() {
     const newTitle = prompt("Novo título", card.title);
     if (!newTitle) return;
@@ -15,8 +19,12 @@ export function Card({ card }: Props) {
   }
 
   return (
-    <div className="bg-zinc-800 p-2 rounded mb-2 flex justify-between items-center">
-      <span onDoubleClick={handleEdit} className="cursor-pointer">
+    <div
+      draggable
+      onDragStart={handleDragStart}
+      className="bg-zinc-800 p-2 rounded mb-2 flex justify-between items-center cursor-grab"
+    >
+      <span onDoubleClick={handleEdit}>
         {card.title}
       </span>
 
@@ -29,4 +37,3 @@ export function Card({ card }: Props) {
     </div>
   );
 }
-
